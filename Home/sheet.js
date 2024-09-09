@@ -1,49 +1,58 @@
-const apiUrl = 'https://ohanasafeguard-fceyhucrdbatc2bz.brazilsouth-01.azurewebsites.net/'
-
-//Start da pagina
 $(document).ready(function () {
-    checkCredentials();
-    PageHeader();
-    loadPage();
+    PageHeader()
+    data = [
+        {
+            id: 1,
+            name: "Netflix",
+            filter: "Streaming"
+        },
+        {
+            id: 2,
+            name: "Amazon",
+            filter: "Loja"
+        }
+    ];
+    $('#listItens')
+        .empty()
+        .append(homePopulate(data));
 });
 
-//Filtragem
 $('#filterField').change(function (e) {
-    filter($('#filterField option:selected').text().trim())
+    filter($('#filterField').val())
 });
 
-//Botão de edição
+
+
 $(document).on('click', '#btnEdit', function (e) {
     e.preventDefault();
-    const idElement = $(this).closest('li').find('#idElement').val();
-    formPopUp({ id: idElement });
+    const idElement= $(this).closest('li').find('#idElement').val();
+    formPopUp({id:idElement});
 });
 
-//Botão de Novo
 $('#btnNew').click(function (e) {
     e.preventDefault();
-    formPopUp({});
+    formPopUp({id:idElement});
 });
 
-//Fechar Form
 $(document).on('click', '#closeForm', function (e) {
     e.preventDefault();
     $('#spanForm').remove();
     $('#overlay').remove();
 });
 
-//Salvar form
 $(document).on('click', '#btnSave', function (event) {
-    event.preventDefault();
-    SaveCredential();
+    data = {
+        id: $('#idLabel').val(),
+        name: $('#nomeInput').val(),
+        email: $('#emailInput').val(),
+        password: $('#senhaInput').val(),
+        url: $('#urlInput').val(),
+        filter: $('#filterField').val()
+    }
 });
 
-//METODOS
-
-//Criar formulario
-async function formPopUp({ id = -1, nome = '', email = '', senha = '', url = '' }) {
-    Loading(1)
-    let options = await FilterPopulate();
+function formPopUp({ id = -1, nome = '', email = '', senha = '', url = '', dataOptionList = null }) {
+    let options = selectPopulate(dataOptionList)
     const overlay = '<div class="vh-100 vw-100 bg-black position-absolute start-0 top-0 opacity-75" id="overlay"></div>'
     let formSpan =
         `<div class="p-4 position-absolute top-50 start-50 translate-middle w-75" id="spanForm">
@@ -62,8 +71,8 @@ async function formPopUp({ id = -1, nome = '', email = '', senha = '', url = '' 
                         <input type="text" class="form-control" id="nomeInput" tabindex="1" value="${nome}">
                     </div>
                     <div class="mb-3 col-lg-6">
-                        <label for="loginInput" class="form-label">Login</label>
-                        <input type="text" class="form-control" id="loginInput" tabindex="2" value="${email}">
+                        <label for="emailInput" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="emailInput" tabindex="2" value="${email}">
                     </div>
                     <div class="mb-3 col-lg-6">
                         <label for="senhaInput" class="form-label">senha</label>
@@ -75,7 +84,7 @@ async function formPopUp({ id = -1, nome = '', email = '', senha = '', url = '' 
                     </div>
                     <div class="input-group mb-3 col mt-3">
                         <span class="input-group-text" id="basic-addon1">Filtro</span>
-                        <select class="form-select" id="filterFormField">
+                        <select class="form-select" id="filterField">
                             ${options}
                         </select>
                     </div>
@@ -88,121 +97,19 @@ async function formPopUp({ id = -1, nome = '', email = '', senha = '', url = '' 
         </div>
     </div>`;
     $('body').append(overlay)
-        .append(formSpan);
-    Loading();
+             .append(formSpan);
 }
 
-//Filtragem
-function filter(name) {
-    $('li').removeClass('d-none');
-    if (name != 'Todos') {
-        $('li').has('span#filterName').each(function () {
-            // Verifica se o texto do <span>
-            if ($(this).find('span#filterName').text().trim() !== name) {
-                // Adiciona a classe "d-none" para ocultar o <li> inteiro
-                $(this).addClass('d-none');
-            }
-        });
-    }
-}
-
-async function loadPage() {
-    Loading(1);
-    
-    //Recupero todos as credenciais
-    let userId = sessionStorage.getItem('userId');
-    let endpoint = `CredentialView/UserId?userId=${userId}`;
-    let data = await new Promise((resolve, reject) => {
-        $.ajax({
-            type: "GET",
-            url: apiUrl + endpoint,
-            success: function (response) {
-                if (response.success === true) {
-                    resolve(response.response); 
-                } else {
-                    reject(null); 
-                }
-            },
-            error: function() {
-                reject(null); 
-            }
-        });
-    });
-    
-    //Recupero todos os filtros do usuario e populo a pagina
-    let filters = await FilterPopulate()
-    $('#filterField').append(filters)
-    $('#listItens').empty().append(homePopulate(data));
-    
-    Loading();
-}
-
-//Salvo itens do formulario
-async function SaveCredential() {
-    let name = $('#nomeInput').val();
-    let login = $('#loginInput').val();
-    let password = $('#senhaInput').val();
-    let url = $('#urlInput').val();
-    let filter = parseInt($('#filterFormField').val(), 10);
-    let userId = sessionStorage.getItem('userId');
-    let data = {
-        "id": 0,
-        "login": login,
-        "name": name,
-        "password": password,
-        "url": url,
-        "userId": userId,
-        "filter": filter
-    };
-    $.ajax({
-        type: "Post",
-        url: apiUrl + 'CredentialStorage',
-        data: JSON.stringify(data),
-        dataType: "json",
-        contentType: 'application/json',
-        success: function (response) {
-            if (response.success == true) {
-                SuccessMessage(response.message)
-            }
-            else {
-                ErrorMessage(response.message)
-            }
+function selectPopulate(dataOptionList = null) {
+    var options = ''
+    if (dataOptionList != null) {
+        for (i = 0; i < dataOptionList.length; i++) {
+            options += `<option value="${dataOptionList[i].id}"> ${dataOptionList[i].name}</option>`
         }
-    });
+    }
+    return options;
 }
 
-//populate functions
-async function FilterPopulate() {
-    let userId = sessionStorage.getItem('userId');
-    let endpoint = `UserFiltersView/UserId?userId=${userId}`;
-
-    // Retorna uma Promise e aguarda a resposta AJAX
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            type: "GET",
-            url: apiUrl + endpoint,
-            success: function (response) {
-                if (response.success === true) {
-                    var dataOptionList = response.response;
-                    var options = '';
-                    if (dataOptionList != null) {
-                        for (let i = 0; i < dataOptionList.length; i++) {
-                            options += `<option value="${dataOptionList[i].filterId}"> ${dataOptionList[i].filterName}</option>`;
-                        }
-                    }
-                    resolve(options);  // Resolução da promise com o valor correto
-                } else {
-                    reject('Erro ao obter os filtros'); // Em caso de erro
-                }
-            },
-            error: function (error) {
-                reject(error); // Em caso de falha no AJAX
-            }
-        });
-    });
-}
-
-//Popular as credenciais
 function homePopulate(dataList = null) {
     var html = '';
     if (dataList == null) {
@@ -210,18 +117,18 @@ function homePopulate(dataList = null) {
         return html
     }
     for (i = 0; i < dataList.length; i++) {
-        let filter = `<span class="badge text-bg-secondary fs-5" id="filterName">${dataList[i].fIlterName}</span>`
+        let filter = `<span class="badge text-bg-secondary fs-5" id="filterName">${dataList[i].filter}</span>`
         html += `
         <li class="list-group-item">
                     <div class="row">
                         <div class="col-1 d-none d-lg-block">
                             <div class="input-group">
                                 <span class="input-group-text" id="basic-addon1">Id</span>
-                                <input type="text" class="form-control" id="idElement" value="${dataList[i].credentialId}" disabled>
+                                <input type="text" class="form-control" id="idElement" value="${dataList[i].id}" disabled>
                             </div>
                         </div>
                         <div class="col-2 text-start m-auto">
-                            <h4>${dataList[i].credentialName}</h4>
+                            <h4>${dataList[i].name}</h4>
                         </div>
                         <div class="col-3 m-auto d-none d-lg-block">
                             ${filter}
@@ -249,11 +156,25 @@ function homePopulate(dataList = null) {
                     </div>
                 </li>
         `
+
     }
     return html
+
 }
 
-//Popular o formulario ao editar
-function formPopulate(id){
-    let endpoint = ``
+function filter(name) {
+    showAllListItems();
+    if (name != 'All') {
+        $('li').has('span#filterName').each(function () {
+            // Verifica se o texto do <span>
+            if ($(this).find('span#filterName').text().trim() !== name) {
+                // Adiciona a classe "d-none" para ocultar o <li> inteiro
+                $(this).addClass('d-none');
+            }
+        });
+    }
+}
+
+function showAllListItems() {
+    $('li').removeClass('d-none');
 }

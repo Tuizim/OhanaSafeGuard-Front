@@ -9,7 +9,7 @@ function SuccessMessage(successMessage, successInfo) {
 function SystemMessage(typeMessage = 'primary', title = 'Message', message = 'Spam', error = 'Error') {
     $('#sysMessage').remove()
     $('body').append(
-        `<div id="sysMessage" class="m-2 position-absolute bottom-0 end-0">
+            `<div id="sysMessage" class="m-2 position-absolute bottom-0 end-0">
                     <div class="alert alert-${typeMessage}" role="alert">
                     <div class="row">
                     <div class="col">
@@ -26,41 +26,41 @@ function SystemMessage(typeMessage = 'primary', title = 'Message', message = 'Sp
                     <p>${error}</p>
                     </div>
             </div>`
-    )
-    $('#sysMessage').css('opacity', '0.7');
-
+        )
+        .css('opacity', '0.7');
+    
     setTimeout(function () {
         $('#sysMessage').remove()
     }, 3000)
 }
 
-function Loading(state = 0) {
+function Loading(id, state=0) {
     if (state == 1) {
-        $('body').append(`
-    <div id="loadingContainer">
-        <div class="vh-100 vw-100 bg-black position-absolute start-0 top-0 opacity-75" id="overlay"></div>
-        <div class="spinner-border text-primary position-absolute top-50 end-50" role="status">
-            <span class="visually-hidden">Loading...</span>
+        $(id).append(`
+        <div class="mt-5 position-absolute start-50">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
-    </div>
         `)
     }
     else{
-        $('#loadingContainer').remove()
+        $(id).empty()
+    }
+
+}
+
+function VerifyCredentials(){
+    const credentialuser=sessionStorage.getItem("UserCredential");
+    const credentialpassword= sessionStorage.getItem("UserCredential");
+    if((credentialuser ==null || credentialuser.length==0) && (credentialpassword ==null || credentialpassword.length==0) ){
+        window.location.href ='/Master/login/login.html';
+
     }
 }
 
-function VerifyCredentials() {
-    const credentialuser = sessionStorage.getItem("UserCredential");
-    const credentialpassword = sessionStorage.getItem("UserCredential");
-    if ((credentialuser == null || credentialuser.length == 0) && (credentialpassword == null || credentialpassword.length == 0)) {
-        window.location.href = '/Master/login/login.html';
-
-    }
-}
-
-function PageHeader() {
-    let header = `    
+function PageHeader(){
+    let header=`    
     
     <nav class="navbar navbar-expand-lg bg-body-tertiary shadow">
         <div class="container-fluid">
@@ -84,11 +84,11 @@ function PageHeader() {
           </div>
         </div>
       </nav>`;
-    $('header').append(header);
+      $('header').append(header);
 }
 
-function ConfirmDelAction() {
-    $('body').append(`<div class="vh-100 vw-100 bg-black position-absolute start-0 top-0 opacity-75" id="overlay"></div>
+function ConfirmDelAction(){
+    $('body').append(    `<div class="vh-100 vw-100 bg-black position-absolute start-0 top-0 opacity-75" id="overlay"></div>
     <div class="bg-white position-absolute top-50 start-50 translate-middle shadow p-3 text-center" id="confirmDelAction">
         <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="rgb(187, 45, 59)" class="bi bi-info-circle"
             viewBox="0 0 16 16">
@@ -119,14 +119,3 @@ $(document).on('click', '#cnclDelBtn', function (e) {
     $('#confirmDelAction').remove()
     $('#overlay').remove()
 });
-
-function checkCredentials() {
-    let userId = sessionStorage.getItem('userId');
-    let token = sessionStorage.getItem('token');
-    if (userId == null | token == null) {
-        window.location.href = '../login/index.html';
-    }
-    else if (userId.length <= 0 | token.length <= 0) {
-        window.location.href = '../login/index.html';
-    }
-}
