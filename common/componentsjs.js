@@ -109,18 +109,25 @@ function ConfirmDelAction() {
 
 }
 
+let DeleteId;
+
 $(document).on('click', '#btnDelete', function (e) {
     e.preventDefault();
     ConfirmDelAction();
+    let currentLi = $(this).closest('li');
+    DeleteId = currentLi.find('#idElement').val();
 });
 
 $(document).on('click', '#cnclDelBtn', function (e) {
     e.preventDefault();
+    CloseConfirmDel();
+});
+function CloseConfirmDel(){
     $('#confirmDelAction').remove()
     $('#overlay').remove()
-});
+}
 
-function checkCredentials() {
+function CheckCredentials() {
     let userId = sessionStorage.getItem('userId');
     let token = sessionStorage.getItem('token');
     if (userId == null | token == null) {

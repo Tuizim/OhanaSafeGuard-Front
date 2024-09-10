@@ -1,28 +1,36 @@
 const apiUrl = 'https://ohanasafeguard-fceyhucrdbatc2bz.brazilsouth-01.azurewebsites.net/'
+const userId = sessionStorage.getItem('userId');
+const token = new Uint8Array(sessionStorage.getItem('token').split(',').map(Number));
 
 //Start da pagina
 $(document).ready(function () {
-    checkCredentials();
+    Loading(1);
+    CheckCredentials();
     PageHeader();
-    loadPage();
+    LoadPage();
+    Loading();
 });
 
 //Filtragem
 $('#filterField').change(function (e) {
-    filter($('#filterField option:selected').text().trim())
+    Filter($('#filterField option:selected').text().trim())
 });
 
 //Botão de edição
-$(document).on('click', '#btnEdit', function (e) {
+$(document).on('click', '#btnEdit', async function (e) {
     e.preventDefault();
     const idElement = $(this).closest('li').find('#idElement').val();
-    formPopUp({ id: idElement });
+    var dataMessage= await GetCredential(idElement);
+    if (dataMessage !=null){
+        FormPopUp({ id: idElement, nome: dataMessage.name, login: dataMessage.login, senha: dataMessage.password, url: dataMessage.url});
+    }
 });
 
 //Botão de Novo
 $('#btnNew').click(function (e) {
     e.preventDefault();
-    formPopUp({});
+    FormPopUp({});
+    Loading();
 });
 
 //Fechar Form
@@ -30,6 +38,7 @@ $(document).on('click', '#closeForm', function (e) {
     e.preventDefault();
     $('#spanForm').remove();
     $('#overlay').remove();
+    LoadPage();
 });
 
 //Salvar form
@@ -38,13 +47,42 @@ $(document).on('click', '#btnSave', function (event) {
     SaveCredential();
 });
 
+//EXCLUIR
+$(document).on('click','#confirmDelBtn', async function(e){
+    Loading(1);
+    e.preventDefault();
+    let endpoint = 'CredentialStorage'
+    let data= await GetCredential(DeleteId);
+    $.ajax({
+        type: "DELETE",
+        url: apiUrl + endpoint,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (response) {
+            if (response.success==true){
+                SuccessMessage(response.message)
+                Loading();
+                CloseConfirmDel();
+                LoadPage()
+            }
+            else{
+                ErrorMessage(response.message)
+                Loading();
+                LoadPage();
+            }
+        }
+    });
+})
+
 //METODOS
 
 //Criar formulario
-async function formPopUp({ id = -1, nome = '', email = '', senha = '', url = '' }) {
-    Loading(1)
+async function FormPopUp({ id = 0, nome = '', login = '', senha = '', url = '', filter=null }) {
+    Loading(1);
     let options = await FilterPopulate();
     const overlay = '<div class="vh-100 vw-100 bg-black position-absolute start-0 top-0 opacity-75" id="overlay"></div>'
+    
     let formSpan =
         `<div class="p-4 position-absolute top-50 start-50 translate-middle w-75" id="spanForm">
         <div class="container bg-body-tertiary h-50 shadow" style="border-radius: 16px;">
@@ -63,7 +101,7 @@ async function formPopUp({ id = -1, nome = '', email = '', senha = '', url = '' 
                     </div>
                     <div class="mb-3 col-lg-6">
                         <label for="loginInput" class="form-label">Login</label>
-                        <input type="text" class="form-control" id="loginInput" tabindex="2" value="${email}">
+                        <input type="text" class="form-control" id="loginInput" tabindex="2" value="${login}">
                     </div>
                     <div class="mb-3 col-lg-6">
                         <label for="senhaInput" class="form-label">senha</label>
@@ -89,11 +127,22 @@ async function formPopUp({ id = -1, nome = '', email = '', senha = '', url = '' 
     </div>`;
     $('body').append(overlay)
         .append(formSpan);
+
+    if (filter!=null){
+        $('#filterFormField option').each(function() {
+            if ($(this).val() == id) {
+                $(this).prop('selected', true);
+            } else {
+                $(this).prop('selected', false);
+            }
+        });
+    }  
     Loading();
 }
 
 //Filtragem
-function filter(name) {
+function Filter(name) {
+    Loading(1);
     $('li').removeClass('d-none');
     if (name != 'Todos') {
         $('li').has('span#filterName').each(function () {
@@ -104,13 +153,13 @@ function filter(name) {
             }
         });
     }
+    Loading();
 }
 
-async function loadPage() {
+async function LoadPage() {
     Loading(1);
-    
     //Recupero todos as credenciais
-    let userId = sessionStorage.getItem('userId');
+    
     let endpoint = `CredentialView/UserId?userId=${userId}`;
     let data = await new Promise((resolve, reject) => {
         $.ajax({
@@ -124,29 +173,37 @@ async function loadPage() {
                 }
             },
             error: function() {
+                ErrorMessage('Consulte o admnistrador')
                 reject(null); 
             }
         });
     });
-    
+    for (i=0;i<data.length;i++){
+        data[i].credentialName = decryptMessage(data[i].credentialName,token);        
+    }
     //Recupero todos os filtros do usuario e populo a pagina
     let filters = await FilterPopulate()
-    $('#filterField').append(filters)
-    $('#listItens').empty().append(homePopulate(data));
-    
+    $('#filterField').empty().append(filters)
+    $('#listItens').empty().append(HomePopulate(data));
     Loading();
 }
 
 //Salvo itens do formulario
 async function SaveCredential() {
+    Loading(1);
+    let id = $('#idLabel').val();
     let name = $('#nomeInput').val();
     let login = $('#loginInput').val();
     let password = $('#senhaInput').val();
     let url = $('#urlInput').val();
     let filter = parseInt($('#filterFormField').val(), 10);
-    let userId = sessionStorage.getItem('userId');
+
+    name = await encryptMessage(name,token);
+    login = await encryptMessage(login,token);
+    password = await encryptMessage(password,token);
+    url = await encryptMessage(url,token);
     let data = {
-        "id": 0,
+        "id": id,
         "login": login,
         "name": name,
         "password": password,
@@ -167,13 +224,16 @@ async function SaveCredential() {
             else {
                 ErrorMessage(response.message)
             }
+        },
+        error: function(){
+            ErrorMessage('Consulte o admnistrador');
         }
     });
+    Loading();
 }
 
 //populate functions
 async function FilterPopulate() {
-    let userId = sessionStorage.getItem('userId');
     let endpoint = `UserFiltersView/UserId?userId=${userId}`;
 
     // Retorna uma Promise e aguarda a resposta AJAX
@@ -196,6 +256,7 @@ async function FilterPopulate() {
                 }
             },
             error: function (error) {
+                ErrorMessage('Consulte o admnistrador')
                 reject(error); // Em caso de falha no AJAX
             }
         });
@@ -203,7 +264,7 @@ async function FilterPopulate() {
 }
 
 //Popular as credenciais
-function homePopulate(dataList = null) {
+function HomePopulate(dataList = null) {
     var html = '';
     if (dataList == null) {
         ErrorMessage('Não foi possivel popular a tela', 'Contate o administrador')
@@ -254,6 +315,30 @@ function homePopulate(dataList = null) {
 }
 
 //Popular o formulario ao editar
-function formPopulate(id){
-    let endpoint = ``
+async function GetCredential(id) {
+    let endpoint = `CredentialStorage/UserId/CredentialId?userId=${userId}&credentialId=${id}`;
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: apiUrl + endpoint,
+            success: function (response) {
+                if (response.success === true) {
+                    response.response.login= decryptMessage(response.response.login,token);
+                    response.response.name= decryptMessage(response.response.name,token);
+                    response.response.password= decryptMessage(response.response.password,token);
+                    response.response.url= decryptMessage(response.response.url,token);
+
+                    resolve(response.response); // Corrigido o uso do resolve
+                } else {
+                    ErrorMessage(response.message, 'Contate o administrador');
+                    reject(response.message); // Rejeita a promise no caso de erro
+                }
+            },
+            error: function (xhr, status, error) {
+                ErrorMessage("Erro na requisição", 'Contate o administrador');
+                reject(error); // Rejeita em caso de falha na requisição
+            }
+        });
+    });
 }

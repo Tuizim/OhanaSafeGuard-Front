@@ -1,14 +1,17 @@
+const apiUrl = 'https://ohanasafeguard-fceyhucrdbatc2bz.brazilsouth-01.azurewebsites.net/'
+const userId = sessionStorage.getItem('userId');
 $(document).ready(function () {
-    
+    CheckCredentials();
     PageHeader();
-    HomePopulate(data)
+    LoadPage();
 });
 
 
-$(document).on('click', '#btnEdit', function (e) {
+$(document).on('click', '#btnEdit', async function (e) {
     e.preventDefault();
-    const idElement= $(this).closest('li').find('#idElement').val();
-    formPopUp({id:idElement});
+    const idElement = $(this).closest('li').find('#idElement').val();
+    let name = await FindFilter(idElement);
+    FormPopUp({ id: idElement, nome:name});
 });
 
 $('#btnNew').click(function (e) {
@@ -20,25 +23,55 @@ $(document).on('click', '#closeForm', function (e) {
     e.preventDefault();
     $('#spanForm').remove();
     $('#overlay').remove();
+    LoadPage();
 });
 
 $(document).on('click', '#btnSave', function (event) {
-    data = {
-        id: $('#idLabel').val(),
-        name: $('#nomeInput').val(),
-    }
+    event.preventDefault();
+    let name = $('#nomeInput').val();
+    SaveFilter({ name: name });
 });
 
+//EXCLUIR
+$(document).on('click', '#confirmDelBtn', async function (e) {
+    Loading(1);
+    e.preventDefault();
+    let endpoint = 'Filter'
+    let data = {
+        id: DeleteId,
+        name: null,
+        userId: userId,
+    }
+    $.ajax({
+        type: "DELETE",
+        url: apiUrl + endpoint,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (response) {
+            if (response.success == true) {
+                SuccessMessage(response.message)
+                Loading();
+                CloseConfirmDel();
+                LoadPage();
+            }
+            else {
+                ErrorMessage(response.message)
+                Loading();
+                LoadPage();
+            }
+        }
+    });
+})
 
-function HomePopulate(dataobject = null) {
+async function HomePopulate(dataobject = null) {
     var html = '';
     if (dataobject == null) {
-        ErrorMessage('Não foi possivel popular a tela', 'Contate o administrador')
         return html
     }
     for (i = 0; i < dataobject.length; i++) {
-    
-        html+= `<li class="list-group-item">
+
+        html += `<li class="list-group-item">
                     <div class="row">
                         <div class="col-1 d-none d-lg-block">
                             <div class="input-group">
@@ -72,12 +105,13 @@ function HomePopulate(dataobject = null) {
                     </div>
                 </li>`;
     }
-    $('#listItens').append(html);
-  }
-function FormPopUp({id='',nome=''}) {
+    $('#listItens').empty().append(html);
+}
+
+function FormPopUp({ id = '', nome = '' }) {
     const overlay = '<div class="vh-100 vw-100 bg-black position-absolute start-0 top-0 opacity-75" id="overlay"></div>'
-    var html=
-    `<div class="p-4 position-absolute top-50 start-50 translate-middle w-75" id="spanForm">
+    var html =
+        `<div class="p-4 position-absolute top-50 start-50 translate-middle w-75" id="spanForm">
             <div class="container bg-body-tertiary h-50 shadow" style="border-radius: 16px;">
                 <form class="p-lg-5 p-3">
                     <div class="text-end">
@@ -99,6 +133,75 @@ function FormPopUp({id='',nome=''}) {
                 </form>
             </div>
         </div>`;
-        $('body').append(overlay)
-             .append(html);
+    $('body').append(overlay)
+        .append(html);
+}
+
+async function LoadPage() {
+    Loading(1);
+    let endpoint = `Filter/UserId?userId=${userId}`
+    let data = await new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: apiUrl + endpoint,
+            success: function (response) {
+                if (response.success == true) {
+                    return resolve(response.response);
+                }
+                return reject(null);
+            },
+            error: function () {
+                ErrorMessage('Consulte o admnistrador');
+                reject(null);
+            }
+
+        });
+    })
+    await HomePopulate(data);
+    Loading();
+}
+
+function SaveFilter({name }) {
+    let data = {
+        id: $('#idLabel').val(),
+        name: name,
+        userId: userId,
+    }
+    let endpoint = 'Filter';
+    $.ajax({
+        type: "POST",
+        url: apiUrl + endpoint,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (response) {
+            if (response.success == true) {
+                SuccessMessage(response.message);
+            }
+            else {
+                ErrorMessage(response.message);
+            }
+        },
+        error: function () {
+            ErrorMessage('Consulte o admnistrador');
+        }
+    });
+}
+
+async function FindFilter(id) {
+    let endpoint = `Filter/UserId/FilterId?id=${id}&userId=${userId}`
+    let name = await new Promise((resolve,reject) => {
+        $.ajax({
+            type: "GET",
+            url: apiUrl + endpoint,
+            success: function (response) {
+                return resolve(response.response.name)
+            },
+            error: function(){
+                ErrorMessage('Consulte o admnistrador');
+               return reject(null)
+            }
+        });
+    })
+    return name;
 }
