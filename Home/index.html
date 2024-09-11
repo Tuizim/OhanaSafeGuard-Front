@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ohana safe guard</title>
-    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="/common/bootstrap.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 
@@ -13,27 +14,39 @@
 </header>
 
 <body class="vh-100 ">
+
     <div class="container mt-5" id="listField">
         <div class="row mb-2">
-            <div class="col text-end">
+            <div class="col-6">
+                <div class="input-group w-50">
+                    <span class="input-group-text d-none d-lg-block" id="basic-addon1">Filtro</span>
+                    <select class="form-select" id="filterField">
+                    </select>
+                </div>
+
+            </div>
+            <div class="col-6 text-end">
                 <button class="btn btn-primary" id="btnNew">New
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+                        <path
+                            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
                     </svg>
                 </button>
             </div>
         </div>
 
         <ul class="list-group" id="listItens">
-            
         </ul>
-        
     </div>
+    
 
 </body>
-<script src="componentsjs.js"></script>
-<script src="FilterSheet.js"></script>
+
+<script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+<script src="/common/crypth.js"></script>
+<script src="sheet.js"></script>
+<script src="/common/componentsjs.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 
 </html>
