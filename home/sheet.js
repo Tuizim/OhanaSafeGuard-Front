@@ -65,12 +65,14 @@ $(document).on('click','#confirmDelBtn', async function(e){
             if (response.success==true){
                 SuccessMessage(response.message)
                 CloseConfirmDel();
-                LoadPage()
             }
             else{
                 ErrorMessage(response.message)
-                LoadPage();
             }
+        },
+        error: function(){
+            ErrorMessage('Entre em contato com o adminstrador')
+            Loading();
         }
     });
     Loading();
