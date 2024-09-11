@@ -186,7 +186,6 @@ async function LoadPage() {
 
 //Salvo itens do formulario
 async function SaveCredential() {
-    Loading(1);
     let id = $('#idLabel').val();
     let name = $('#nomeInput').val();
     let login = $('#loginInput').val();
@@ -225,8 +224,6 @@ async function SaveCredential() {
             ErrorMessage('Consulte o admnistrador');
         }
     });
-    Loading();
-
 }
 
 //populate functions
