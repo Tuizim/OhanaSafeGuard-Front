@@ -160,14 +160,15 @@ async function LoadPage() {
     await HomePopulate(data);
 }
 
-function SaveFilter({name }) {
+async function SaveFilter({name }) {
+    Loading(1);
     let data = {
         id: $('#idLabel').val(),
         name: name,
         userrow: userId,
     }
     let endpoint = 'Filter';
-    $.ajax({
+    await $.ajax({
         type: "POST",
         url: apiUrl + endpoint,
         data: JSON.stringify(data),
@@ -185,6 +186,7 @@ function SaveFilter({name }) {
             ErrorMessage('Consulte o admnistrador');
         }
     });
+    Loading();
 }
 
 async function FindFilter(id) {

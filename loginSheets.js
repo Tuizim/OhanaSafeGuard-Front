@@ -22,7 +22,7 @@ $(document).ready(function () {
                 if (response.success == true) {
                     sessionStorage.setItem('userId', response.response);
                     sessionStorage.setItem('token', token);
-                    window.location.href = 'homeIndex.html';
+                    window.location.href = 'HomeIndex.html';
 
                 }
                 else {
