@@ -71,10 +71,10 @@ function PageHeader() {
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/Home/index.html">Home</a>
+                <a class="nav-link active" aria-current="page" href="HomeIndex.html">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/Filters/index.html">Filters</a>
+                <a class="nav-link" href="FiltersIndex.html">Filters</a>
               </li>
             </ul>
             <form class="d-flex d-none" role="search" id="search-autocomplete">
@@ -131,9 +131,9 @@ function CheckCredentials() {
     let userId = sessionStorage.getItem('userId');
     let token = sessionStorage.getItem('token');
     if (userId == null | token == null) {
-        window.location.href = '../index.html';
+        window.location.href = 'index.html';
     }
     else if (userId.length <= 0 | token.length <= 0) {
-        window.location.href = '../index.html';
+        window.location.href = 'index.html';
     }
 }
