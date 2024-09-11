@@ -29,10 +29,12 @@ $(document).ready(function () {
                     $('#loginInput').addClass('is-invalid');
                     $('#passwordInput').addClass('is-invalid');
                     $('#TokenInput').addClass('is-invalid');
+                    Loading();
                     ErrorMessage(response.message, 'Erro na conta? consulte o admnistrador')
                 }
             },
-            error:function(){
+            error: function () {
+                Loading();
                 ErrorMessage('ServerErro, Fale com o admnistrador');
             }
         });
