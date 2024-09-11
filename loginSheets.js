@@ -5,6 +5,10 @@ $(document).ready(function () {
         Loading(1);
         if ($('#TokenInput').val() == "" | $('#loginInput').val() == "" | $('#passwordInput').val() == "") {
             ErrorMessage('Todos os campos devem ser preenchidos')
+            $('#loginInput').addClass('is-invalid');
+            $('#passwordInput').addClass('is-invalid');
+            $('#TokenInput').addClass('is-invalid');
+            Loading();
             return
         }
         let token = deriveKeyFromPassword($('#TokenInput').val());
@@ -18,7 +22,7 @@ $(document).ready(function () {
                 if (response.success == true) {
                     sessionStorage.setItem('userId', response.response);
                     sessionStorage.setItem('token', token);
-                    window.location.href = '../home/index.html';
+                    window.location.href = 'homeIndex.html';
 
                 }
                 else {
@@ -27,6 +31,9 @@ $(document).ready(function () {
                     $('#TokenInput').addClass('is-invalid');
                     ErrorMessage(response.message, 'Erro na conta? consulte o admnistrador')
                 }
+            },
+            error:function(){
+                ErrorMessage('ServerErro, Fale com o admnistrador');
             }
         });
 
