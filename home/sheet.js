@@ -1,13 +1,12 @@
-const apiUrl = 'https://ohanasafeguard-fceyhucrdbatc2bz.brazilsouth-01.azurewebsites.net/'
 const userId = sessionStorage.getItem('userId');
 let token;
 
 //Start da pagina
 $(document).ready(async function () {
     Loading(1);
-    await CheckCredentials();
+    CheckCredentials();
     token = new Uint8Array(sessionStorage.getItem('token').split(',').map(Number));
-    await PageHeader();
+    PageHeader();
     await LoadPage();
     Loading();
 });

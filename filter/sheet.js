@@ -1,4 +1,3 @@
-const apiUrl = 'https://ohanasafeguard-fceyhucrdbatc2bz.brazilsouth-01.azurewebsites.net/'
 const userId = sessionStorage.getItem('userId');
 $(document).ready(async function () {
     Loading(1);

@@ -1,4 +1,3 @@
-const apiUrl = 'https://ohanasafeguard-fceyhucrdbatc2bz.brazilsouth-01.azurewebsites.net/'
 $(document).ready(function () {
     $('#loginBtn').click(async function (e) {
         e.preventDefault();
@@ -22,7 +21,7 @@ $(document).ready(function () {
                 if (response.success == true) {
                     sessionStorage.setItem('userId', response.response);
                     sessionStorage.setItem('token', token);
-                    window.location.href = 'HomeIndex.html';
+                    window.location.href = 'home/index.html';
 
                 }
                 else {
