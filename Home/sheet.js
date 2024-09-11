@@ -1,13 +1,14 @@
 const apiUrl = 'https://ohanasafeguard-fceyhucrdbatc2bz.brazilsouth-01.azurewebsites.net/'
 const userId = sessionStorage.getItem('userId');
-const token = new Uint8Array(sessionStorage.getItem('token').split(',').map(Number));
+let token;
 
 //Start da pagina
-$(document).ready(function () {
+$(document).ready(async function () {
     Loading(1);
-    CheckCredentials();
-    PageHeader();
-    LoadPage();
+    await CheckCredentials();
+    token = new Uint8Array(sessionStorage.getItem('token').split(',').map(Number));
+    await PageHeader();
+    await LoadPage();
     Loading();
 });
 
@@ -42,9 +43,11 @@ $(document).on('click', '#closeForm', function (e) {
 });
 
 //Salvar form
-$(document).on('click', '#btnSave', function (event) {
+$(document).on('click', '#btnSave',async function (event) {
+    Loading(1);
     event.preventDefault();
-    SaveCredential();
+    await SaveCredential();
+    Loading();
 });
 
 //EXCLUIR
@@ -53,7 +56,7 @@ $(document).on('click','#confirmDelBtn', async function(e){
     e.preventDefault();
     let endpoint = 'CredentialStorage'
     let data= await GetCredential(DeleteId);
-    $.ajax({
+    await $.ajax({
         type: "DELETE",
         url: apiUrl + endpoint,
         data: JSON.stringify(data),
@@ -62,17 +65,16 @@ $(document).on('click','#confirmDelBtn', async function(e){
         success: function (response) {
             if (response.success==true){
                 SuccessMessage(response.message)
-                Loading();
                 CloseConfirmDel();
                 LoadPage()
             }
             else{
                 ErrorMessage(response.message)
-                Loading();
                 LoadPage();
             }
         }
     });
+    Loading();
 })
 
 //METODOS
@@ -142,7 +144,6 @@ async function FormPopUp({ id = 0, nome = '', login = '', senha = '', url = '', 
 
 //Filtragem
 function Filter(name) {
-    Loading(1);
     $('li').removeClass('d-none');
     if (name != 'Todos') {
         $('li').has('span#filterName').each(function () {
@@ -153,14 +154,10 @@ function Filter(name) {
             }
         });
     }
-    Loading();
 }
 
 async function LoadPage() {
-    Loading(1);
-    //Recupero todos as credenciais
-    
-    let endpoint = `CredentialView/UserId?userId=${userId}`;
+    let endpoint = `CredentialView/UserRow?userRow=${userId}`;
     let data = await new Promise((resolve, reject) => {
         $.ajax({
             type: "GET",
@@ -182,10 +179,10 @@ async function LoadPage() {
         data[i].credentialName = decryptMessage(data[i].credentialName,token);        
     }
     //Recupero todos os filtros do usuario e populo a pagina
-    let filters = await FilterPopulate()
+    let filters = '<option value="all">Todos</option>';
+     filters += await FilterPopulate()
     $('#filterField').empty().append(filters)
     $('#listItens').empty().append(HomePopulate(data));
-    Loading();
 }
 
 //Salvo itens do formulario
@@ -208,10 +205,10 @@ async function SaveCredential() {
         "name": name,
         "password": password,
         "url": url,
-        "userId": userId,
+        "userrow": userId,
         "filter": filter
     };
-    $.ajax({
+    await $.ajax({
         type: "Post",
         url: apiUrl + 'CredentialStorage',
         data: JSON.stringify(data),
@@ -230,11 +227,12 @@ async function SaveCredential() {
         }
     });
     Loading();
+
 }
 
 //populate functions
 async function FilterPopulate() {
-    let endpoint = `UserFiltersView/UserId?userId=${userId}`;
+    let endpoint = `UserFiltersView/UserRow?userRow=${userId}`;
 
     // Retorna uma Promise e aguarda a resposta AJAX
     return new Promise((resolve, reject) => {
@@ -316,7 +314,7 @@ function HomePopulate(dataList = null) {
 
 //Popular o formulario ao editar
 async function GetCredential(id) {
-    let endpoint = `CredentialStorage/UserId/CredentialId?userId=${userId}&credentialId=${id}`;
+    let endpoint = `CredentialStorage/UserRow/CredentialId?userrow=${userId}&credentialId=${id}`;
 
     return new Promise((resolve, reject) => {
         $.ajax({

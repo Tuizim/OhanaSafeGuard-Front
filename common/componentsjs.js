@@ -131,9 +131,9 @@ function CheckCredentials() {
     let userId = sessionStorage.getItem('userId');
     let token = sessionStorage.getItem('token');
     if (userId == null | token == null) {
-        window.location.href = '../login/index.html';
+        window.location.href = '../index.html';
     }
     else if (userId.length <= 0 | token.length <= 0) {
-        window.location.href = '../login/index.html';
+        window.location.href = '../index.html';
     }
 }

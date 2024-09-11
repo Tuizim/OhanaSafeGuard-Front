@@ -1,9 +1,11 @@
 const apiUrl = 'https://ohanasafeguard-fceyhucrdbatc2bz.brazilsouth-01.azurewebsites.net/'
 const userId = sessionStorage.getItem('userId');
-$(document).ready(function () {
+$(document).ready(async function () {
+    Loading(1);
     CheckCredentials();
     PageHeader();
     LoadPage();
+    Loading();
 });
 
 
@@ -40,9 +42,9 @@ $(document).on('click', '#confirmDelBtn', async function (e) {
     let data = {
         id: DeleteId,
         name: null,
-        userId: userId,
+        userrow: userId,
     }
-    $.ajax({
+    await $.ajax({
         type: "DELETE",
         url: apiUrl + endpoint,
         data: JSON.stringify(data),
@@ -53,15 +55,14 @@ $(document).on('click', '#confirmDelBtn', async function (e) {
                 SuccessMessage(response.message)
                 Loading();
                 CloseConfirmDel();
-                LoadPage();
             }
             else {
                 ErrorMessage(response.message)
                 Loading();
-                LoadPage();
             }
         }
     });
+    LoadPage();
 })
 
 async function HomePopulate(dataobject = null) {
@@ -108,7 +109,7 @@ async function HomePopulate(dataobject = null) {
     $('#listItens').empty().append(html);
 }
 
-function FormPopUp({ id = '', nome = '' }) {
+function FormPopUp({ id = 0, nome = '' }) {
     const overlay = '<div class="vh-100 vw-100 bg-black position-absolute start-0 top-0 opacity-75" id="overlay"></div>'
     var html =
         `<div class="p-4 position-absolute top-50 start-50 translate-middle w-75" id="spanForm">
@@ -138,8 +139,7 @@ function FormPopUp({ id = '', nome = '' }) {
 }
 
 async function LoadPage() {
-    Loading(1);
-    let endpoint = `Filter/UserId?userId=${userId}`
+    let endpoint = `Filter/UserRow?userRow=${userId}`
     let data = await new Promise((resolve, reject) => {
         $.ajax({
             type: "GET",
@@ -158,14 +158,13 @@ async function LoadPage() {
         });
     })
     await HomePopulate(data);
-    Loading();
 }
 
 function SaveFilter({name }) {
     let data = {
         id: $('#idLabel').val(),
         name: name,
-        userId: userId,
+        userrow: userId,
     }
     let endpoint = 'Filter';
     $.ajax({
