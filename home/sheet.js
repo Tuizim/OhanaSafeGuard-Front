@@ -76,8 +76,18 @@ $(document).on('click', '#confirmDelBtn', async function (e) {
         }
     });
     Loading();
-})
+});
 
+//Ver e desver senha
+$(document).on('click', '#passwordSee', async function (e) {
+    e.preventDefault();
+    seePassword();
+});
+//Copiar Login
+$(document).on('click', '#loginCopy', async function (e) {
+    e.preventDefault();
+    CopyInput('Login')
+});
 //METODOS
 
 //Criar formulario
@@ -99,16 +109,51 @@ async function FormPopUp({ id = 0, nome = '', login = '', senha = '', url = '', 
                         <input type="text" class="form-control" id="idLabel" value="${id}">
                     </div>
                     <div class="mb-3 col-lg-6">
-                        <label for="nomeInput" class="form-label">Nome</label>
-                        <input type="text" class="form-control" id="nomeInput" tabindex="1" value="${nome}">
+                        <label for="loginInput" class="form-label">Login</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-person-fill" viewBox="0 0 16 16">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                                </svg>
+                            </span>
+                            <input type="text" class="form-control" id="loginInput" tabindex="2"
+                                value="${login}">
+                            <button class="btn" id="loginCopy" title="Copy">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-copy" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="mb-3 col-lg-6">
-                        <label for="loginInput" class="form-label">Login</label>
-                        <input type="text" class="form-control" id="loginInput" tabindex="2" value="${login}">
+                        <label for="nomeInput" class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="nomeInput" tabindex="2" value="${nome}">
                     </div>
                     <div class="mb-3 col-lg-6">
                         <label for="senhaInput" class="form-label">senha</label>
-                        <input type="text" class="form-control" id="senhaInput" tabindex="3" value="${senha}">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-key-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2M2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
+                                </svg>
+                            </span>
+                            <input type="password" class="form-control" id="senhaInput" tabindex="3"
+                                value="${senha}">
+                            <button class="btn" id="passwordSee" title="Remove/Put mask">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-eye" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                                    <path
+                                        d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="mb-3 col-lg-6">
                         <label for="urlInput" class="form-label">Url</label>
@@ -342,4 +387,23 @@ async function GetCredential(id) {
             }
         });
     });
+}
+
+
+function seePassword(){
+    var passwordType = $('#senhaInput').attr('type')
+    if (passwordType=='password'){
+        $('#senhaInput').attr('type','text')
+    }
+    else{
+        $('#senhaInput').attr('type','password')
+    }
+}
+
+function CopyInput(type){
+    if (type=='Login'){
+        let temp = $('#loginInput');
+        temp.select();
+        document.execCommand("copy");
+    }
 }
