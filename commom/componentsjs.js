@@ -55,7 +55,9 @@ function PageHeader() {
     
     <nav class="navbar navbar-expand-lg bg-body-tertiary shadow">
         <div class="container-fluid">
-          <span class="navbar-brand no-select" >Ohana Safe guard</span>
+          <span class="navbar-brand no-select" >
+          ${LOGOIMAGE}
+          </span>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
