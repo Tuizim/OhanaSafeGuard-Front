@@ -1,6 +1,6 @@
 # OhanaSafeGuard - Front-End 🌐🔐
 
-![Project Logo](./resource/logo.svg) 
+<img src="./resource/logo.svg" alt="Project Logo" width="300"/>
 
 ## 📝 About
 
