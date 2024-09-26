@@ -47,4 +47,4 @@ Obrigado por visitar este repositório! Se você tiver alguma dúvida, sugestão
 
 ---
 
-Fique à vontade para entrar em contato ou seguir meus perfis para acompanh
+Fique à vontade para entrar em contato ou seguir meus perfis para acompanhar mais projetos!
