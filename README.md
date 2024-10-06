@@ -41,7 +41,7 @@ Obrigado por visitar este repositório! Se você tiver alguma dúvida, sugestão
 ### Informações de Contato
 
 - **Artur Trombim**
-- [![Email](https://img.shields.io/badge/tuitr.negocios%40gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:tuitr.negocios@gmail.com)
+- [![Email](https://img.shields.io/badge/arturtrombim.dev%40gmail.comarturtrombim.dev@gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:arturtrombim.dev@gmail.com)
 - [![GitHub](https://img.shields.io/badge/Tuizim-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Tuizim)
 - [![LinkedIn](https://img.shields.io/badge/Artur%20Trombim-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/artur-trombim)
 
